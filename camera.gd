@@ -1,4 +1,4 @@
-extends Camera
+class_name FreelookCamera extends Camera
 
 export(float, 0.0, 1.0) var sensitivity = 0.25
 

@@ -1,4 +1,8 @@
-class_name FreelookCamera extends Camera
+class_name FreeLookCamera extends Camera
+
+# Modifier keys' speed multiplier
+const SHIFT_MULTIPLIER = 2.5
+const ALT_MULTIPLIER = 1.0 / SHIFT_MULTIPLIER
 
 export(float, 0.0, 1.0) var sensitivity = 0.25
 
@@ -20,6 +24,8 @@ var _a = false
 var _d = false
 var _q = false
 var _e = false
+var _shift = false
+var _alt = false
 
 func _input(event):
 	# Receives mouse motion
@@ -51,6 +57,10 @@ func _input(event):
 				_q = event.pressed
 			KEY_E:
 				_e = event.pressed
+			KEY_SHIFT:
+				_shift = event.pressed
+			KEY_ALT:
+				_alt = event.pressed
 
 # Updates mouselook and movement every frame
 func _process(delta):
@@ -69,6 +79,11 @@ func _update_movement(delta):
 	var offset = _direction.normalized() * _acceleration * _vel_multiplier * delta \
 		+ _velocity.normalized() * _deceleration * _vel_multiplier * delta
 	
+	# Compute modifiers' speed multiplier
+	var speed_multi = 1
+	if _shift: speed_multi *= SHIFT_MULTIPLIER
+	if _alt: speed_multi *= ALT_MULTIPLIER
+	
 	# Checks if we should bother translating the camera
 	if _direction == Vector3.ZERO and offset.length_squared() > _velocity.length_squared():
 		# Sets the velocity to 0 to prevent jittering due to imperfect deceleration
@@ -79,7 +94,7 @@ func _update_movement(delta):
 		_velocity.y = clamp(_velocity.y + offset.y, -_vel_multiplier, _vel_multiplier)
 		_velocity.z = clamp(_velocity.z + offset.z, -_vel_multiplier, _vel_multiplier)
 	
-		translate(_velocity * delta)
+		translate(_velocity * delta * speed_multi)
 
 # Updates mouse look 
 func _update_mouselook():

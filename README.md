@@ -1,5 +1,5 @@
 # Simple Free-Look Camera
-A simple 3D 100-line free-look camera for Godot 3.2 that mimics the functionality of the editor's camera for in-game use.
+A simple 3D 100-line free-look camera for Godot 4 that mimics the functionality of the editor's camera for in-game use. For a version that works for Godot 3, see the `godot-3` branch.
 ## Usage
 Use **W** and **S** to move forward and backward.
 

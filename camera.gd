@@ -1,10 +1,11 @@
-class_name FreeLookCamera extends Camera
+class_name FreeLookCamera extends Camera3D
 
 # Modifier keys' speed multiplier
 const SHIFT_MULTIPLIER = 2.5
 const ALT_MULTIPLIER = 1.0 / SHIFT_MULTIPLIER
 
-export(float, 0.0, 1.0) var sensitivity = 0.25
+
+@export_range(0.0, 1.0) var sensitivity: float = 0.25
 
 # Mouse state
 var _mouse_position = Vector2(0.0, 0.0)
@@ -35,16 +36,16 @@ func _input(event):
 	# Receives mouse button input
 	if event is InputEventMouseButton:
 		match event.button_index:
-			BUTTON_RIGHT: # Only allows rotation if right click down
+			MOUSE_BUTTON_RIGHT: # Only allows rotation if right click down
 				Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED if event.pressed else Input.MOUSE_MODE_VISIBLE)
-			BUTTON_WHEEL_UP: # Increases max velocity
+			MOUSE_BUTTON_WHEEL_UP: # Increases max velocity
 				_vel_multiplier = clamp(_vel_multiplier * 1.1, 0.2, 20)
-			BUTTON_WHEEL_DOWN: # Decereases max velocity
+			MOUSE_BUTTON_WHEEL_DOWN: # Decereases max velocity
 				_vel_multiplier = clamp(_vel_multiplier / 1.1, 0.2, 20)
 
 	# Receives key input
 	if event is InputEventKey:
-		match event.scancode:
+		match event.keycode:
 			KEY_W:
 				_w = event.pressed
 			KEY_S:
@@ -70,9 +71,11 @@ func _process(delta):
 # Updates camera movement
 func _update_movement(delta):
 	# Computes desired direction from key states
-	_direction = Vector3(_d as float - _a as float, 
-						 _e as float - _q as float,
-						 _s as float - _w as float)
+	_direction = Vector3(
+		(_d as float) - (_a as float), 
+		(_e as float) - (_q as float),
+		(_s as float) - (_w as float)
+	)
 	
 	# Computes the change in velocity due to desired direction and "drag"
 	# The "drag" is a constant acceleration on the camera to bring it's velocity to 0
@@ -109,5 +112,5 @@ func _update_mouselook():
 		pitch = clamp(pitch, -90 - _total_pitch, 90 - _total_pitch)
 		_total_pitch += pitch
 	
-		rotate_y(deg2rad(-yaw))
-		rotate_object_local(Vector3(1,0,0), deg2rad(-pitch))
+		rotate_y(deg_to_rad(-yaw))
+		rotate_object_local(Vector3(1,0,0), deg_to_rad(-pitch))

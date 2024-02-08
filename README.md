@@ -1,11 +1,17 @@
 # Simple Free-Look Camera
 A simple 3D 100-line free-look camera for Godot 4 that mimics the functionality of the editor's camera for in-game use. For a version that works for Godot 3, see the `godot-3` branch.
 ## Usage
+**Note: ** Keyboard keys are changeable in the editor
+
 Use **W** and **S** to move forward and backward.
 
 Use **A** and **D** to move left and right.
 
 Use **Q** and **E** to move up and down.
+
+Use **Shift** and **Alt** to move fast or slow
+
+Use **R** to reset the camera to its starting position
 
 Roll the **scroll wheel** to increase and decrease movement speed.
 

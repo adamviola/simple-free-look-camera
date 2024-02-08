@@ -4,6 +4,9 @@ class_name FreeLookCamera extends Camera3D
 const SHIFT_MULTIPLIER = 2.5
 const ALT_MULTIPLIER = 1.0 / SHIFT_MULTIPLIER
 
+# Store initial values to allow resetting
+var _starting_position
+var _starting_rotation
 
 @export_range(0.0, 1.0) var sensitivity: float = 0.25
 
@@ -19,14 +22,28 @@ var _deceleration = -10
 var _vel_multiplier = 4
 
 # Keyboard state
-var _w = false
-var _s = false
-var _a = false
-var _d = false
-var _q = false
-var _e = false
-var _shift = false
-var _alt = false
+var _fwd = false
+var _back = false
+var _left = false
+var _right = false
+var _down = false
+var _up = false
+var _fast = false
+var _slow = false
+
+@export var _forward_key = KEY_W
+@export var _backward_key = KEY_S
+@export var _left_key = KEY_A
+@export var _right_key = KEY_D
+@export var _up_key = KEY_E
+@export var _down_key = KEY_Q
+@export var _fast_key = KEY_SHIFT
+@export var _slow_key = KEY_ALT
+@export var _reset_key = KEY_R
+
+func _ready():
+	_starting_position = position
+	_starting_rotation = rotation;
 
 func _input(event):
 	# Receives mouse motion
@@ -46,22 +63,25 @@ func _input(event):
 	# Receives key input
 	if event is InputEventKey:
 		match event.keycode:
-			KEY_W:
-				_w = event.pressed
-			KEY_S:
-				_s = event.pressed
-			KEY_A:
-				_a = event.pressed
-			KEY_D:
-				_d = event.pressed
-			KEY_Q:
-				_q = event.pressed
-			KEY_E:
-				_e = event.pressed
-			KEY_SHIFT:
-				_shift = event.pressed
-			KEY_ALT:
-				_alt = event.pressed
+			_forward_key:
+				_fwd = event.pressed
+			_backward_key:
+				_back = event.pressed
+			_left_key:
+				_left = event.pressed
+			_right_key:
+				_right = event.pressed
+			_down_key:
+				_down = event.pressed
+			_up_key:
+				_up = event.pressed
+			_fast_key:
+				_fast = event.pressed
+			_slow_key:
+				_slow = event.pressed
+			_reset_key: # Reset the cameras position and rotation to what it started with
+				position = _starting_position
+				rotation = _starting_rotation
 
 # Updates mouselook and movement every frame
 func _process(delta):
@@ -72,9 +92,9 @@ func _process(delta):
 func _update_movement(delta):
 	# Computes desired direction from key states
 	_direction = Vector3(
-		(_d as float) - (_a as float), 
-		(_e as float) - (_q as float),
-		(_s as float) - (_w as float)
+		(_right as float) - (_left as float), 
+		(_up as float) - (_down as float),
+		(_back as float) - (_fwd as float)
 	)
 	
 	# Computes the change in velocity due to desired direction and "drag"
@@ -84,8 +104,8 @@ func _update_movement(delta):
 	
 	# Compute modifiers' speed multiplier
 	var speed_multi = 1
-	if _shift: speed_multi *= SHIFT_MULTIPLIER
-	if _alt: speed_multi *= ALT_MULTIPLIER
+	if _fast: speed_multi *= SHIFT_MULTIPLIER
+	if _slow: speed_multi *= ALT_MULTIPLIER
 	
 	# Checks if we should bother translating the camera
 	if _direction == Vector3.ZERO and offset.length_squared() > _velocity.length_squared():
